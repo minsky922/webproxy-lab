@@ -952,10 +952,10 @@ int open_clientfd(char *hostname, char *port) {
     struct addrinfo hints, *listp, *p;
 
     /* Get a list of potential server addresses */
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_socktype = SOCK_STREAM;  /* Open a connection */
-    hints.ai_flags = AI_NUMERICSERV;  /* ... using a numeric port arg. */
-    hints.ai_flags |= AI_ADDRCONFIG;  /* Recommended for connections */
+    memset(&hints, 0, sizeof(struct addrinfo)); /*hints 구조체를 0으로 초기화*/
+    hints.ai_socktype = SOCK_STREAM;  /* Open a connection(TCP로 연결)*/
+    hints.ai_flags = AI_NUMERICSERV;  /* ... using a numeric port arg.(숫자포트인수사용) */
+    hints.ai_flags |= AI_ADDRCONFIG;  /* Recommended for connections(현재 시스템의 IP설정을 고려하여 주소를 구성) */
     if ((rc = getaddrinfo(hostname, port, &hints, &listp)) != 0) {
         fprintf(stderr, "getaddrinfo failed (%s:%s): %s\n", hostname, port, gai_strerror(rc));
         return -2;
