@@ -956,7 +956,7 @@ int open_clientfd(char *hostname, char *port) {
     hints.ai_socktype = SOCK_STREAM;  /* Open a connection */
     hints.ai_flags = AI_NUMERICSERV;  /* ... using a numeric port arg. */
     hints.ai_flags |= AI_ADDRCONFIG;  /* Recommended for connections */
-    if ((rc = getadd     rinfo(hostname, port, &hints, &listp)) != 0) {
+    if ((rc = getaddrinfo(hostname, port, &hints, &listp)) != 0) {
         fprintf(stderr, "getaddrinfo failed (%s:%s): %s\n", hostname, port, gai_strerror(rc));
         return -2;
     }
@@ -1065,7 +1065,6 @@ int Open_listenfd(char *port)
 }
 
 /* $end csapp.c */
-
 
 
 

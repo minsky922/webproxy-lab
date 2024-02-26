@@ -1,7 +1,28 @@
+<!DOCTYPE html>
 <html>
-<head><title>test</title></head>
-<body> 
-<img align="middle" src="godzilla.gif">
-Dave O'Hallaron
-</body>
+    <head>
+        <title>Test</title>
+        <script>
+            function change()
+            {
+                let arg1 = document.getElementById("first").value;
+                let arg2 = document.getElementById("second").value;
+                document.location.href=`./cgi-bin/adder?${arg1}&${arg2}`; 
+            }
+        </script>
+        <style>
+            .earthvideo{
+                width: 100%;
+                max-width: 100%,;
+                height: auto;
+            }
+        </style>
+    </head>
+    <body> 
+        <video class="earthvideo" autoplay muted controls align="middle" src="earth.mp4"></video>
+        <p>earth ~?</p>
+        <input type = "text" id="first" size="10">
+        <input type = "text" id="second" size="10">
+        <button onclick="change()">adder</button>
+    </body>
 </html>
