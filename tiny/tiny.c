@@ -13,7 +13,7 @@ void read_requesthdrs(rio_t *rp);
 int parse_uri(char *uri, char *filename, char *cgiargs);
 void get_filetype(char *filename, char *filetype);
 void clienterror(int fd, char *cause, char *errnum, char *shortmsg, char *longmsg);
-void serve_static(int fd, char *filename, int filesize);
+void serve_static(int fd, char *filename, int filesize, char *method);
 void serve_dynamic(int fd, char *filename, char *cgiargs);
 
 /* port 번호를 인자로 받는다. */
@@ -108,7 +108,7 @@ void doit(int fd)
       return;
     }
     /* 정적 서버에 파일의 사이즈를 같이 보낸다. => Response header에 Content-length 위해 */
-    serve_static(fd, filename, sbuf.st_size);
+    serve_static(fd, filename, sbuf.st_size, method);
   }
 
   /* Serve dynamic content */
@@ -245,12 +245,12 @@ void clienterror(int fd, char *cause, char *errnum, char *shortmsg, char *longms
 }
 
 
-void serve_static(int fd, char *filename, int filesize)
+void serve_static(int fd, char *filename, int filesize, char *method)
 {
   int srcfd;
   char *srcp, filetype[MAXLINE], buf[MAXBUF];
 
-  /* Send response headers to client */
+  /* 응답헤더 전송 */
   get_filetype(filename, filetype);                         // 파일 이름의 접미어 부분 검사 => 파일 타입 결정
   sprintf(buf, "HTTP/1.0 200 OK\r\n");                      // 응답 라인 작성
   sprintf(buf, "%sServer: Tiny Web Server\r\n", buf);       // 응답 헤더 작성
@@ -263,8 +263,13 @@ void serve_static(int fd, char *filename, int filesize)
   printf("Response headers: \n");
   printf("%s", buf);
 
+  /* HTTP HEAD 메소드 처리 */
+  if (strcasecmp(method, "HEAD") == 0)
+    {
+        return; // 응답 바디를 전송하지 않음
+    }
 
-  /* Send response body to client */
+  /* 응답 바디 전송 */
   srcfd = Open(filename, O_RDONLY, 0);  // filename의 이름을 갖는 파일을 읽기 권한으로 불러온다.
   srcp = Mmap(0, filesize, PROT_READ, MAP_PRIVATE, srcfd, 0); // 메모리에 파일 내용을 동적할당한다.
   Close(srcfd);                         // 소켓을 열어놓는 것은 "치명적"인 메모리 누수 발생시킴 ..
@@ -292,14 +297,15 @@ void serve_dynamic(int fd, char *filename, char *cgiargs)
   sprintf(buf, "Server: Tiny Web Server\r\n");
   Rio_writen(fd, buf, strlen(buf));
 
+
   if (Fork() == 0) // fork() 자식 프로세스 생성됐으면 0을 반환 (성공)
   { 
     /* Return first part of HTTP response */
     // 환경변수를 cigarg로 바꿔주겠다 0: 기존 값 쓰겠다 . 1: cigargs 
-    setenv("QUERY_STRING", cgiargs, 1);   
+    setenv("QUERY_STRING", cgiargs, 1);
     // old file descriptor, new file descriptor
     // 화면에 출력할 수 있게끔 띄워주겠다 .
-    Dup2(fd, STDOUT_FILENO);              // Redirect stdout to clinet
+    Dup2(fd, STDOUT_FILENO);              // 자식 프로세스의 표준 출력을 클라이언트 소켓에 연결된 파일 디스크립터로 변경
     Execve(filename, emptylist, environ); // Run CGI program
   }
   Wait(NULL); // Parent waits for and reaps child

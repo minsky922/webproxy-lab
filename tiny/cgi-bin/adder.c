@@ -14,8 +14,8 @@ int main(void)
     {
         p = strchr(buf, '&');
         *p = '\0';
-        strcpy(arg1, buf);
-        strcpy(arg2, p + 1);
+        strcpy(arg1, buf+3);
+        strcpy(arg2, p + 4);
         n1 = atoi(arg1);
         n2 = atoi(arg2);
     }
@@ -28,11 +28,8 @@ int main(void)
 
     printf("Connection: close\r\n");
     printf("Content-length: %d\r\n", (int)strlen(content));
-    printf("Content-type: text/html\r\n\r\n");
-
-    if (strcasecmp(getenv("REQUEST_METHOD"), "GET") == 0) // GET인 경우만
-        printf("%s", content);                            // HTML 응답의 바디인 content 출력
-
+    printf("Content-type: text/html\r\n\r\n");                        // HTML 응답의 바디인 content 출력
+    printf("%s",content);
     fflush(stdout); // 출력 버퍼 비움
 
     exit(0);
