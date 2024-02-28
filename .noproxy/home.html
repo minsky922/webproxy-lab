@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test</title>
+        <style>
+            .earthvideo{
+                width: 50%;
+                max-width: 50%,;
+                height: auto;
+            }
+        </style>
+    </head>
+    <body> 
+        <div>
+        <img align="middle" src="godzilla.gif" />
+        Dave O'Hallaron
+        </div>
+        <div>
+        <h1>earth</h1>
+        <video class="earthvideo" autoplay muted controls align="middle" src="earth.mp4"></video>
+    </div>
+        <form action="/cgi-bin/adder" method="GET">
+            <label for="n1">Add number1:</label>
+            <input type="text" id="n1" name="n1" required minlength="1" maxlength="10" size="10" />
+      
+            <label for="n2">Add number2:</label>
+            <input type="text" id="n2" name="n2" required minlength="1" maxlength="10" size="10" />
+            <input type="submit" value="add" />
+          </form>
+
+    </body>
+</html>
